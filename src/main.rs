@@ -112,9 +112,8 @@ fn main() {
         .add_system_set(
             SystemSet::new()
                 .with_run_criteria(FixedTimestep::step(TIME_STEP as f64))
-                .with_system(check_for_collisions)
                 .with_system(move_ball)
-                .with_system(apply_velocity.before(check_for_collisions)),
+                .with_system(apply_velocity),
         )
         .add_system(bevy::window::close_on_esc)
         .run();
@@ -158,11 +157,11 @@ fn move_ball(keyboard_input: Res<Input<KeyCode>>, mut query: Query<&mut Transfor
     if keyboard_input.pressed(KeyCode::Right) || keyboard_input.pressed(KeyCode::D) {
         direction_x += 1.0;
     }
-    if keyboard_input.pressed(KeyCode::Left) || keyboard_input.pressed(KeyCode::S) {
+    if keyboard_input.pressed(KeyCode::Down) || keyboard_input.pressed(KeyCode::S) {
         direction_y -= 1.0;
     }
 
-    if keyboard_input.pressed(KeyCode::Right) || keyboard_input.pressed(KeyCode::W) {
+    if keyboard_input.pressed(KeyCode::Up) || keyboard_input.pressed(KeyCode::W) {
         direction_y += 1.0;
     }
 
@@ -178,7 +177,6 @@ fn move_ball(keyboard_input: Res<Input<KeyCode>>, mut query: Query<&mut Transfor
     ball_transform.translation.y = new_ball_position_y.clamp(bottom_bound, top_bound);
 }
 
-fn check_for_collisions() {}
 
 fn apply_velocity(mut query: Query<(&mut Transform, &Velocity)>) {
     for (mut transform, velocity) in &mut query {
