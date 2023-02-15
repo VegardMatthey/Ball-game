@@ -14,12 +14,17 @@ const RIGHT_WALL: f32 = 450.;
 const BOTTOM_WALL: f32 = -300.;
 const TOP_WALL: f32 = 300.;
 
-const TIME_STEP: f32 = 1.0 / 60.0;
+const TIME_STEP: f32 = 1.0 / 120.0;
 const BACKGROUND_COLOR: Color = Color::rgb(0.9, 0.9, 0.9);
 const BALL_COLOR: Color = Color::rgb(1.0, 0.5, 0.5);
 const BALL_STARTING_POSITION: Vec3 = Vec3::new(0.0, -50.0, 1.0);
 const BALL_SIZE: Vec3 = Vec3::new(30.0, 30.0, 0.0);
 const BALL_SPEED: f32 = 400.0;
+
+const LEFT_BOUND: f32 = LEFT_WALL + WALL_THICKNESS / 2.0 + BALL_SIZE.x / 2.0;
+const RIGHT_BOUND: f32 = RIGHT_WALL - WALL_THICKNESS / 2.0 - BALL_SIZE.x / 2.0;
+const BOTTOM_BOUND: f32 = BOTTOM_WALL + WALL_THICKNESS / 2.0 + BALL_SIZE.y / 2.0;
+const TOP_BOUND: f32 = TOP_WALL - WALL_THICKNESS / 2.0 - BALL_SIZE.y / 2.0;
 
 #[derive(Component)]
 struct Ball;
@@ -63,7 +68,6 @@ impl WallLocation {
     fn size(&self) -> Vec2 {
         let arena_height = TOP_WALL - BOTTOM_WALL;
         let arena_width = RIGHT_WALL - LEFT_WALL;
-        // Make sure we haven't messed up our constants
 
         match self {
             WallLocation::Left | WallLocation::Right => {
@@ -168,13 +172,8 @@ fn move_ball(keyboard_input: Res<Input<KeyCode>>, mut query: Query<&mut Transfor
     let new_ball_position_x = ball_transform.translation.x + direction_x * BALL_SPEED * TIME_STEP;
     let new_ball_position_y = ball_transform.translation.y + direction_y * BALL_SPEED * TIME_STEP;
 
-    let left_bound = LEFT_WALL + WALL_THICKNESS / 2.0 + BALL_SIZE.x / 2.0;
-    let right_bound = RIGHT_WALL - WALL_THICKNESS / 2.0 - BALL_SIZE.x / 2.0;
-    let bottom_bound = BOTTOM_WALL + WALL_THICKNESS / 2.0 + BALL_SIZE.y / 2.0;
-    let top_bound = TOP_WALL - WALL_THICKNESS / 2.0 - BALL_SIZE.y / 2.0;
-
-    ball_transform.translation.x = new_ball_position_x.clamp(left_bound, right_bound);
-    ball_transform.translation.y = new_ball_position_y.clamp(bottom_bound, top_bound);
+    ball_transform.translation.x = new_ball_position_x.clamp(LEFT_BOUND, RIGHT_BOUND);
+    ball_transform.translation.y = new_ball_position_y.clamp(BOTTOM_BOUND, TOP_BOUND);
 }
 
 
